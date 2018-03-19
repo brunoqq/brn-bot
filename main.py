@@ -8,13 +8,6 @@ import os
 
 client = discord.Client()
 
-is_prod = os.environ.get('IS_HEROKU', None)
-if is_prod:
-    token = os.environ.get('TOKEN')
-else:
-    import secreto
-    token = secreto.token
-
 g = safygiphy.Giphy()
 brunoid = "359129090285895680"
 
@@ -34,7 +27,7 @@ def toint(s):
 
 @client.event
 async def on_ready():
-    print("===================  ==============")
+    print("=================================")
     print("Bot iniciado com sucesso!")
     print (client.user.name)
     print (client.user.id)
@@ -271,4 +264,4 @@ async def on_member_remove(member):
     msg = "Xau xau {0}".format(member.mention)
     await client.send_message(channel, msg)
 
-client.run('token')
+client.run('NDI0MjExODY0NzI2Mjc0MDQ4.DZG5jQ.2M0so7alWrBFfn6fPvBezdwLTy0')

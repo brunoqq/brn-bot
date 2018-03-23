@@ -270,4 +270,4 @@ async def on_member_remove(member):
     msg = "Xau xau {0}".format(member.mention)
     await client.send_message(channel, msg)
 
-client.run('NDI0MjExODY0NzI2Mjc0MDQ4.DZG5jQ.2M0so7alWrBFfn6fPvBezdwLTy0')
+client.run('NDI0MjExODY0NzI2Mjc0MDQ4.DZcJ6w.rl-VphijKvXjAod0I1JIFj4DwxU')

@@ -202,7 +202,7 @@ async def on_message(message):
         reaction_msg_stuff["r_role_msg_user_id"] = message.author.id
         reaction_msg_stuff["r_role_msg_id"] = msg.id
         
-     if message.content.lower().startswith("!say"):
+    if message.content.lower().startswith("!say"):
         msg = message.content[5:2000]
         await client.send_message(message.channel, msg)
         await client.delete_message(message)  

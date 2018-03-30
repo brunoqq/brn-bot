@@ -134,15 +134,26 @@ async def on_message(message):
                 await client.send_message(canal, js['url'])
 
 #PEGA O AVATAR DO USUÁRIO
-    if message.content.lower().startswith('!avatar'):
-        avatarembed = discord.Embed(
-            title="",
-            color=0xFF8000,
-            description="[Clique aqui]("+ message.author.avatar_url +") para acessar o link de seu avatar!"
-        )
-        avatarembed.set_author(name=message.author.name)
-        avatarembed.set_image(url=message.author.avatar_url)
-        await client.send_message(message.channel, embed=avatarembed)
+    elif message.content.lower().startswith('!avatar'):
+        try:
+            membro = message.mentions[0]
+            avatarembed = discord.Embed(
+                title="",
+                color=0xFF8000,
+                description="**[Clique aqui]("+ membro.avatar_url +") para acessar o link de seu avatar!**"
+            )
+            avatarembed.set_author(name=membro.name)
+            avatarembed.set_image(url=membro.avatar_url)
+            await client.send_message(message.channel, embed=avatarembed)
+        except:
+            avatarembed2 = discord.Embed(
+                title="",
+                color=0xFF8000,
+                description="**[Clique aqui](" + message.author.avatar_url + ") para acessar o link de seu avatar!**"
+            )
+            avatarembed2.set_author(name=message.author.name)
+            avatarembed2.set_image(url=message.author.avatar_url)
+            await client.send_message(message.channel, embed=avatarembed2)
 
 #APAGA DE 1 A 100 MENSAGENS
     if message.content.lower().startswith('!apagar'):

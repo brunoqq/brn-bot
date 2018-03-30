@@ -101,6 +101,24 @@ async def on_message(message):
         await client.send_message(message.channel, "✔ O staff {} expulsou o membro {}!".format(message.author.mention, message.mentions[0].mention))
         await client.kick(member)
 
+#MUTA UM MEMBRO
+    elif message.content.lower().startswith('!mute'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        mention = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Mutado')
+        await client.add_roles(mention, cargo)
+        await client.send_message(message.channel, '✔ O membro {} foi mutado com sucesso!'.format(mention))
+
+#DESMUTA UM MEMBRO
+    elif message.content.lower().startswith('!unmute'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        mention = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Mutado')
+        await client.remove_roles(mention, cargo)
+        await client.send_message(message.channel, '✔ O membro {} foi desmutado com sucesso!'.format(mention))
+
 #INICIA UMA VOTAÇÃO COM REAÇÃO DE LIKE E DESLIKE
     elif message.content.lower().startswith('!votar'):
         msg = message.content[7:2000]
@@ -140,7 +158,7 @@ async def on_message(message):
             avatarembed = discord.Embed(
                 title="",
                 color=0xFF8000,
-                description="**[Clique aqui]("+ membro.avatar_url +") para acessar o link de seu avatar!**"
+                description="**[Clique aqui](" + membro.avatar_url + ") para acessar o link de seu avatar!**"
             )
             avatarembed.set_author(name=membro.name)
             avatarembed.set_image(url=membro.avatar_url)

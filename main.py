@@ -4,7 +4,9 @@ import io
 import requests
 import safygiphy
 import random
-import os
+import aiohttp
+import time
+
 
 client = discord.Client()
 
@@ -18,6 +20,7 @@ qntdd = int
 reaction_msg_stuff = {"role_msg_id": None, "role_msg_user_id": None, "r_role_msg_id": None, "r_role_msg_user_id": None}
 BOTCOLOR = 0x547e34
 version = "Beta 1.0.0"
+user = discord.Member
 
 def toint(s):
     try:
@@ -37,17 +40,111 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    
+
+#VEJA O MS DE CONEXÃO DO BOT
+    if message.content.lower().startswith('!ping'):
+      timep = time.time()
+      emb = discord.Embed(title='Aguarde', color=0x565656)
+      pingm0 = await client.send_message(message.channel, embed=emb)
+      ping = time.time() - timep
+      pingm1 = discord.Embed(title='Pong!', description=':ping_pong: Ping - %.01f segundos' % ping, color=0x15ff00)
+      await client.edit_message(pingm0, embed=pingm1)
+
+#ROLA UM DADO
+    if message.content.lower().startswith('!dado'):
+        choice = random.randint(1, 6)
+        embeddad = discord.Embed(title='Dado', description=' Joguei o dado, o resultado é :  {} 🎲'.format(choice),
+                             colour=0x1abc9c)
+        await client.send_message(message.channel, embed=embeddad)
+
+#INFO DO SERVIDOR
+    if message.content.lower().startswith('!serverinfo'):
+        server = message.server
+        embedserver = discord.Embed(
+            title='Informaçoes do Servidor',
+            color=0x551A8B,
+            descripition='Essas são as informaçoes\n')
+        embedserver = discord.Embed(name="{} Server ".format(message.server.name), color=0x551A8B)
+        embedserver.add_field(name="Nome:", value=message.server.name, inline=True)
+        embedserver.add_field(name="Dono:", value=message.server.owner.mention)
+        embedserver.add_field(name="ID:", value=message.server.id, inline=True)
+        embedserver.add_field(name="Cargos:", value=len(message.server.roles), inline=True)
+        embedserver.add_field(name="Membros:", value=len(message.server.members), inline=True)
+        embedserver.add_field(name="Criado em:", value=message.server.created_at.strftime("%d %b %Y %H:%M"))
+        embedserver.add_field(name="Emojis:", value=f"{len(message.server.emojis)}/100")
+        embedserver.add_field(name="Região:", value=str(message.server.region).title())
+        embedserver.set_thumbnail(url=message.server.icon_url)
+        embedserver.set_footer(text="By: brunoqq")
+        await client.send_message(message.channel, embed=embedserver)
+
+#GERA UM CONVITE E ENVIA NO PRIVADO DE QUEM EXECUTOU O COMANDO
     if message.content.lower().startswith('!convite'):
         invite = await client.create_invite(message.channel, max_uses=1, xkcd=True)
         await client.send_message(message.author, "Seu convite é {}".format(invite.url))
         await client.send_message(message.channel, "Olá {}, acabei de enviar um convite na sua direct.".format(message.author.mention))
 
+#BANE UM MEMBRO
+    elif message.content.lower().startswith('!ban'):
+        membro = message.mentions[0]
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, "❌ {} Você nao possui permissão para executar este comando!".format(message.author.mention))
+
+        await client.send_message(message.channel, "✔ O staff {} Baniu o membro {}!".format(message.author.mention, message.mentions[0].mention))
+        await client.ban(membro)
+
+#KICKA UM MEMBRO
+    elif message.content.lower().startswith('!kick'):
+        member = message.mentions[0]
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, "❌ {} Você nao possui permissão para executar este comando!".format(message.author.mention))
+
+        await client.send_message(message.channel, "✔ O staff {} expulsou o membro {}!".format(message.author.mention, message.mentions[0].mention))
+        await client.kick(member)
+
+#INICIA UMA VOTAÇÃO COM REAÇÃO DE LIKE E DESLIKE
+    elif message.content.lower().startswith('!votar'):
+        msg = message.content[7:2000]
+        botmsg = await client.send_message(message.channel, msg)
+        await client.add_reaction(botmsg, '👍')
+        await client.add_reaction(botmsg, '👎')
+        await client.delete_message(message)
+
+#ALTERE O STATUS DE JOGO DO BOT
     if message.content.startswith('!jogando') and message.author.id == brunoid:
         game = message.content[9:]
         await client.change_presence(game=discord.Game(name=game))
         await client.send_message(message.channel, "Status de jogo alterado para: " + game + " ")
 
+#GERA UM GIF/VÍDEO ALEATÓRIO DE GATO
+    if message.content.lower().startswith('!cat'):
+        async with aiohttp.get('http://aws.random.cat/meow') as r:
+            if r.status == 200:
+                js = await r.json()
+                canal = message.channel
+                await client.delete_message(message)
+                await client.send_message(canal, js['file'])
+
+#GERA UM GIF/VÍDEO ALEATÓRIO DE CACHORRO
+    if message.content.lower().startswith('!dog'):
+        async with aiohttp.get('https://random.dog/woof.json') as r:
+            if r.status == 200:
+                js = await r.json()
+                canal = message.channel
+                await client.delete_message(message)
+                await client.send_message(canal, js['url'])
+
+#PEGA O AVATAR DO USUÁRIO
+    if message.content.lower().startswith('!avatar'):
+        avatarembed = discord.Embed(
+            title="",
+            color=0xFF8000,
+            description="[Clique aqui]("+ message.author.avatar_url +") para acessar o link de seu avatar!"
+        )
+        avatarembed.set_author(name=message.author.name)
+        avatarembed.set_image(url=message.author.avatar_url)
+        await client.send_message(message.channel, embed=avatarembed)
+
+#APAGA DE 1 A 100 MENSAGENS
     if message.content.lower().startswith('!apagar'):
         qntdd = message.content.strip('!apagar ')
         qntdd = toint(qntdd)
@@ -76,6 +173,7 @@ async def on_message(message):
         else:
             await client.send_message(message.channel, 'Você não tem permissão para utilizar este comando.')
 
+#PEGA INFORMAÇÕES DO USUÁRIO
     if message.content.startswith('!user'):
         try:
             user = message.mentions[0]
@@ -115,6 +213,44 @@ async def on_message(message):
         finally:
             pass
 
+#GERA UM GIF
+    if message.content.startswith('!gif'):
+        gif_tag = message.content[5:]
+        rgif = g.random(tag=str(gif_tag))
+        response = requests.get(
+            str(rgif.get("data", {}).get('image_original_url')), stream=True
+        )
+        await client.send_file(message.channel, io.BytesIO(response.raw.read()), filename='video.gif')
+
+#GERA UM GIF DIVERTIDO
+    if message.content.startswith('!diversão'):
+        gif_tag = "fun"
+        rgif = g.random(tag=str(gif_tag))
+        response = requests.get(
+            str(rgif.get("data", {}).get('image_original_url')), stream=True
+        )
+        await client.send_file(message.channel, io.BytesIO(response.raw.read()), filename='video.gif')
+
+#MOEDA CARA OU COROA
+    if message.content.lower().startswith('!moeda'):
+       choice = random.randint(1, 2)
+       if choice == 1:
+        await client.add_reaction(message, '🌝')
+       if choice == 2:
+        await client.add_reaction(message, '👑')
+
+#CANAL DE SUGESTÕES, TODA MENSAGEM ENVIADA NESSE CANAL TEM ESSAS DUAS REAÇÕES
+    if message.channel.id == ("423558695516110848"):
+        await client.add_reaction(message, "👍")
+        await client.add_reaction(message, "👎")
+
+#BOT AVISA O QUE FOI DITO
+    if message.content.lower().startswith("!say"):
+        msg = message.content[5:2000]
+        await client.send_message(message.channel, msg)
+        await client.delete_message(message)
+
+#INFORMAÇÕES DO BOT NO PRIVADO
     if message.content.lower().startswith('!ajuda'):
         embed = discord.Embed(
             title="Meus comandos:",
@@ -125,7 +261,11 @@ async def on_message(message):
                         "***!ping*** » Veja o meu ping. \n"
                         "***!cargo*** » Escolha UM cargo voluntário. \n"
                         "***!r_cargo*** » Remova um cargo voluntário. \n"
-                        "***!gif*** » Gere um GIF aleátorio."
+                        "***!gif*** `<tag do gif (de preferencia em inglês)>` » Gere um GIF aleátorio. \n"
+                        "***!dado*** » Role um dado com um número de 1 a 6. \n"
+                        "***!dog*** » Gere um gif/vídeo de um cachorro. \n"
+                        "***!cat*** » Gere um gif/vídeo de um gato. \n"
+                        "***!avatar*** `<usuário>` » Veja a foto de perfil de um usuário."
         )
         embed.set_author(
             name="BrunoBot",
@@ -140,36 +280,11 @@ async def on_message(message):
             url="https://cdn.discordapp.com/attachments/423159064533532672/424213167317712946/dsg.png"
         )
 
-        await client.send_message(message.channel, "Olá {}, te enviei todos os meus comandos no seu privado!".format(message.author.mention))
+        await client.send_message(message.channel, "Olá {}, te enviei todos os meus comandos no seu privado!".format(
+            message.author.mention))
         await client.send_message(message.author, embed=embed)
 
-    if message.content.startswith('!gif'):
-        gif_tag = message.content[5:]
-        rgif = g.random(tag=str(gif_tag))
-        response = requests.get(
-            str(rgif.get("data", {}).get('image_original_url')), stream=True
-        )
-        await client.send_file(message.channel, io.BytesIO(response.raw.read()), filename='video.gif')
-
-    if message.content.startswith('!diversão'):
-        gif_tag = "fun"
-        rgif = g.random(tag=str(gif_tag))
-        response = requests.get(
-            str(rgif.get("data", {}).get('image_original_url')), stream=True
-        )
-        await client.send_file(message.channel, io.BytesIO(response.raw.read()), filename='video.gif')
-
-    if message.content.lower().startswith('!moeda'):
-       choice = random.randint(1, 2)
-       if choice == 1:
-        await client.add_reaction(message, '🌝')
-       if choice == 2:
-        await client.add_reaction(message, '👑')
-
-    if message.channel.id == ("423558695516110848"):
-        await client.add_reaction(message, "👍")
-        await client.add_reaction(message, "👎")
-
+    #ADICIONA O CARGO POR REAÇÃO
     if message.content.lower().startswith("!cargo"):
         embed = discord.Embed(
             title="Escolha um cargo:",
@@ -186,6 +301,7 @@ async def on_message(message):
         reaction_msg_stuff["role_msg_user_id"] = message.author.id
         reaction_msg_stuff["role_msg_id"] = msg.id
 
+#REMOVE O CARGO POR REAÇÃO
     if message.content.lower().startswith("!r_cargo"):
         embed = discord.Embed(
             title="Remova algum cargo:",
@@ -201,12 +317,8 @@ async def on_message(message):
 
         reaction_msg_stuff["r_role_msg_user_id"] = message.author.id
         reaction_msg_stuff["r_role_msg_id"] = msg.id
-        
-    if message.content.lower().startswith("!say"):
-        msg = message.content[5:2000]
-        await client.send_message(message.channel, msg)
-        await client.delete_message(message)  
-        
+
+#REAÇÃO POR ROLE
 @client.event
 async def on_reaction_add(reaction, user):
     msgid = reaction.message.id
@@ -250,6 +362,7 @@ async def on_reaction_add(reaction, user):
     except discord.errors.HTTPException as e:
         await client.send_message(reaction.message.channel, e)
 
+#AO ENTRAR ELE ENVIA MENSAGEM NO PRIVADO, SETA ROLE MEMBRO E ENVIA MENSAGEM NO CANAL DO DISCORD
 @client.event
 async def on_member_join(member):
 
@@ -262,12 +375,13 @@ async def on_member_join(member):
       msg = "Seja bem vindo ao servidor {0}, divirta-se!".format(member.mention, member.server.name)
       await client.send_message(channel, msg)
 
+#MENSAGEM QUANDO ALGUÉM SAI DO SERVIDOR
 @client.event
 async def on_member_remove(member):
 
     channel = client.get_channel('423159064533532672')
     serverchannel = member.server.default_channel
-    msg = "Xau xau {0}".format(member.mention)
+    msg = "Xau xau {0}".format(member.name)
     await client.send_message(channel, msg)
 
 client.run('NDI0MjExODY0NzI2Mjc0MDQ4.DZcJ6w.rl-VphijKvXjAod0I1JIFj4DwxU')

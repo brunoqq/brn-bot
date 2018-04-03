@@ -44,7 +44,6 @@ async def on_ready():
     print("Bot iniciado com sucesso!")
     print (client.user.name)
     print (client.user.id)
-    print('Logado em')
     print(f"Bot Versão: {version}")
     print("=================================")
     await client.change_presence(game=discord.Game(name="!AJUDA", url='https://twitch.tv/TheDiretor', type=1))

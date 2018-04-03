@@ -308,7 +308,7 @@ async def on_message(message):
         )
         embed.set_author(
             name="BrunoBot",
-            icon_url="https://cdn.discordapp.com/attachments/424217108864434177/430807914517757964/dsg.png",
+            icon_url="https://imgur.com/a/LFCtr",
             url="https://twitter.com/brunoqq_"
         )
         embed.set_footer(

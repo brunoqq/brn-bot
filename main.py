@@ -13,6 +13,14 @@ client = discord.Client()
 g = safygiphy.Giphy()
 brunoid = "359129090285895680"
 
+client = discord.Client()
+is_prod = os.environ.get('IS_HEROKU', None)
+if is_prod:
+    token = os.environ.get('TOKEN')
+else:
+    import secreto
+    token = secreto.token
+
 msg_id = None
 msg_user = None
 msg_author = None
@@ -413,4 +421,4 @@ async def on_member_remove(member):
     msg = "Xau xau {0}".format(member.name)
     await client.send_message(channel, msg)
 
-client.run('NDI0MjExODY0NzI2Mjc0MDQ4.DZcJ6w.rl-VphijKvXjAod0I1JIFj4DwxU')
+client.run(token)

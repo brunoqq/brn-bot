@@ -6,6 +6,7 @@ import safygiphy
 import random
 import aiohttp
 import time
+import os
 
 
 client = discord.Client()
@@ -14,6 +15,7 @@ g = safygiphy.Giphy()
 brunoid = "359129090285895680"
 
 client = discord.Client()
+
 is_prod = os.environ.get('IS_HEROKU', None)
 if is_prod:
     token = os.environ.get('TOKEN')

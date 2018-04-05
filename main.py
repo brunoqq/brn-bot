@@ -8,12 +8,6 @@ import aiohttp
 import time
 import os
 
-
-client = discord.Client()
-
-g = safygiphy.Giphy()
-brunoid = "359129090285895680"
-
 client = discord.Client()
 
 is_prod = os.environ.get('IS_HEROKU', None)
@@ -23,13 +17,16 @@ else:
     import secreto
     token = secreto.token
 
+g = safygiphy.Giphy()
+brunoid = "359129090285895680"
+
 msg_id = None
 msg_user = None
 msg_author = None
 qntdd = int
 reaction_msg_stuff = {"role_msg_id": None, "role_msg_user_id": None, "r_role_msg_id": None, "r_role_msg_user_id": None}
 BOTCOLOR = 0x547e34
-version = "Beta 1.0.0"
+version = "Not found!"
 user = discord.Member
 
 def toint(s):
@@ -44,12 +41,28 @@ async def on_ready():
     print("Bot iniciado com sucesso!")
     print (client.user.name)
     print (client.user.id)
-    print(f"Bot Versão: {version}")
+    print(f"Bot Version: {version}")
     print("=================================")
     await client.change_presence(game=discord.Game(name="!AJUDA", url='https://twitch.tv/TheDiretor', type=1))
 
 @client.event
 async def on_message(message):
+
+    if message.content.lower().startswith('!renomear'):
+        membro = message.mentions[0]
+        apelido = message.mentions[0]
+        nick = apelido.strip(membro.mention)
+        if not message.author.server_permissions.manage_nicknames:
+            return await client.send_message(message.channel, "Você não possui essa permissão.")
+        nickantigo = membro.display_name
+        await client.change_nickname(membro, nick)
+        embedren = discord.Embed(title=" Alteração de nick!", description=" \n ", color=0x551A8B)
+        embedren.set_thumbnail(url=membro.avatar_url)
+        embedren.add_field(name='Antigo nick', value=nickantigo, inline=True)
+        embedren.add_field(name='Novo nick', value=nick, inline=True)
+        embedren.add_field(name='Alterado por', value=message.author, inline=True)
+
+        await client.send_message(message.channel, embed=embedren)
 
 #VEJA O MS DE CONEXÃO DO BOT
     if message.content.lower().startswith('!ping'):
@@ -129,6 +142,59 @@ async def on_message(message):
         await client.remove_roles(mention, cargo)
         await client.send_message(message.channel, '✔ O membro {} foi desmutado com sucesso!'.format(mention))
 
+#COMANDOS PARA SETAR ROLES
+    #FRIEND
+    elif message.content.lower().startswith('!setfriend'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Friend 💯')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "FRIEND" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removefriend'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Friend 💯')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "FRIEND" foi removido do membro {}!'.format(user.mention))
+
+    #MEMBER
+    elif message.content.lower().startswith('!setmember'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='MEMBRO')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "MEMBRO" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removemember'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='MEMBRO')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "MEMBRO" foi removido do membro {}!'.format(user.mention))
+
+    #STAFF
+    elif message.content.lower().startswith('!setstaff'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='STAFF 🔒')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "STAFF" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removestaff'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='STAFF 🔒')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "STAFF" foi removido do membro {}!'.format(user.mention))
+
+
 #INICIA UMA VOTAÇÃO COM REAÇÃO DE LIKE E DESLIKE
     elif message.content.lower().startswith('!votar'):
         msg = message.content[7:2000]
@@ -188,7 +254,7 @@ async def on_message(message):
         qntdd = message.content.strip('!apagar ')
         qntdd = toint(qntdd)
 
-        cargo = discord.utils.find(lambda r: r.name == "MEMBRO", message.server.roles)
+        cargo = discord.utils.find(lambda r: r.name == "STAFF 🔒", message.server.roles)
 
         if message.author.top_role.position >= cargo.position:
             if qntdd <= 100:
@@ -308,7 +374,7 @@ async def on_message(message):
         )
         embed.set_author(
             name="BrunoBot",
-            icon_url="https://imgur.com/a/LFCtr",
+            icon_url="https://cdn.discordapp.com/attachments/423159064533532672/424213167317712946/dsg.png",
             url="https://twitter.com/brunoqq_"
         )
         embed.set_footer(

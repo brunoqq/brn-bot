@@ -245,6 +245,74 @@ async def on_message(message):
         await client.remove_roles(user, cargo)
         await client.send_message(message.channel, '✔ Grupo "Programador" foi removido do membro {}!'.format(user.mention))
 
+    #ADMINISTRADOR
+    elif message.content.lower().startswith('!setadmin'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Administrador ⭐')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Administrador" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removeadmin'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Administrador ⭐')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Administrador" foi removido do membro {}!'.format(user.mention))
+
+    #CLIENTE
+    elif message.content.lower().startswith('!setcliente'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Cliente ✔')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Cliente" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removecliente'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Cliente ✔')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Cliente" foi removido do membro {}!'.format(user.mention))
+
+    #DISCORD DEVELOPER
+    elif message.content.lower().startswith('!setdcdev'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Discord Developer ☕')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Discord Developer" foi adicionado ao membro {}!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removedcdev'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Discord Developer ☕')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ Grupo "Discord Developer" foi removido do membro {}!'.format(user.mention))
+
+    #GAY
+    elif message.content.lower().startswith('!setgay'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Gay 🍌')
+        await client.add_roles(user, cargo)
+        await client.send_message(message.channel, '✔ O membro {} se assumiu e virou gay!'.format(user.mention))
+
+    elif message.content.lower().startswith('!removegay'):
+        if not message.author.server_permissions.administrator:
+            return await client.send_message(message.channel, '❌ Você não possui permissão para executar este comando!')
+        user = message.mentions[0]
+        cargo = discord.utils.get(message.author.server.roles, name='Gay 🍌')
+        await client.remove_roles(user, cargo)
+        await client.send_message(message.channel, '✔ O membro {} parou de jogar LOL!'.format(user.mention))
+
 #INICIA UMA VOTAÇÃO COM REAÇÃO DE LIKE E DESLIKE
     elif message.content.lower().startswith('!votar'):
         msg = message.content[7:2000]
@@ -420,7 +488,7 @@ async def on_message(message):
         await client.add_reaction(message, '👑')
 
 #CANAL DE SUGESTÕES, TODA MENSAGEM ENVIADA NESSE CANAL TEM ESSAS DUAS REAÇÕES
-    if message.channel.id == ("423558695516110848"):
+    if message.channel.id == ("431895749593137152"):
         await client.add_reaction(message, "👍")
         await client.add_reaction(message, "👎")
 
@@ -445,11 +513,12 @@ async def on_message(message):
                         "***!dado*** » Role um dado com um número de 1 a 6. \n"
                         "***!dog*** » Gere um gif/vídeo de um cachorro. \n"
                         "***!cat*** » Gere um gif/vídeo de um gato. \n"
-                        "***!avatar*** `<usuário>` » Veja a foto de perfil de um usuário."
+                        "***!avatar*** `<usuário>` » Veja a foto de perfil de um usuário.\n"
+                        "***Qualquer dúvida me contate no Twitter!*** [Clique aqui](https://twitter.com/brunoqq_)"
         )
         embed.set_author(
             name="BrunoBot",
-            icon_url="https://cdn.discordapp.com/attachments/423159064533532672/424213167317712946/dsg.png",
+            icon_url=client.user.avatar_url,
             url="https://twitter.com/brunoqq_"
         )
         embed.set_footer(
@@ -547,19 +616,19 @@ async def on_reaction_add(reaction, user):
 async def on_member_join(member):
 
       await client.send_message(member, "Seja bem vindo ao nosso Discord! Qualquer dúvida, sugestões ou bugs contate nosso fundador Bruno#7647!")
-      grupo = discord.utils.find(lambda g: g.name == "MEMBRO", member.server.roles)
+      grupo = discord.utils.find(lambda g: g.name == "Membro ⏳", member.server.roles)
       await client.add_roles(member, grupo)
 
-      channel = client.get_channel('423159064533532672')
+      channel = client.get_channel('431895597423919105')
       serverchannel = member.server.default_channel
-      msg = "Seja bem vindo ao servidor {0}, divirta-se!".format(member.mention, member.server.name)
+      msg = "Seja bem vindo ao servidor {0}, leia as regras e divirta-se!".format(member.mention, member.server.name)
       await client.send_message(channel, msg)
 
 #MENSAGEM QUANDO ALGUÉM SAI DO SERVIDOR
 @client.event
 async def on_member_remove(member):
 
-    channel = client.get_channel('423159064533532672')
+    channel = client.get_channel('')
     serverchannel = member.server.default_channel
     msg = "Xau xau {0}".format(member.name)
     await client.send_message(channel, msg)

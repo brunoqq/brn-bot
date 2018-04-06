@@ -306,7 +306,7 @@ async def on_message(message):
         qntdd = message.content.strip('!apagar ')
         qntdd = toint(qntdd)
 
-        cargo = discord.utils.find(lambda r: r.name == "STAFF 🔒", message.server.roles)
+        cargo = discord.utils.find(lambda r: r.name == "Staff 🔒", message.server.roles)
 
         if message.author.top_role.position >= cargo.position:
             if qntdd <= 100:
